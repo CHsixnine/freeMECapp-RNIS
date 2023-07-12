@@ -18,11 +18,12 @@ from django.contrib import admin
 from django.urls import path
 from RNI.views import *
 URI = {
-    "rab_info" : "queries/rab_info",
-    "plmn_info" : "queries/plmn_info",
-    "s1_bearer_info" : "queries/s1_bearer_info",
-    "layer2_meas" : "queries/layer2_meas",
-    "subscription" : "subscriptions",
+    "rab_info" : "rni/v2/queries/rab_info",
+    "plmn_info" : "rni/v2/queries/plmn_info",
+    "s1_bearer_info" : "rni/v2/queries/s1_bearer_info",
+    "layer2_meas" : "rni/v2/queries/layer2_meas",
+    "subscription" : "rni/v2/subscriptions",
+    "test" : "rni/v2/test",
 }
 
 urlpatterns = [
@@ -32,5 +33,6 @@ urlpatterns = [
     path(URI["s1_bearer_info"],s1_bearer_info),
     path(URI["layer2_meas"],layer2_meas),
     path(URI["subscription"],subscription),
-    path('subscriptions/<str:content>',subscription_get)
+    path('subscriptions/<str:content>',subscription_get),
+    path(URI["test"],test)
 ]
