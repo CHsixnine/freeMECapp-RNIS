@@ -79,6 +79,38 @@ class Layer2meas(models.Model):
     ul_nongbr_data_volume_ue = models.DecimalField(max_digits=64,decimal_places=0, default=0 )
 
 class Subscription(models.Model):
-    subscription_Id = models.CharField(max_length=64, default='unverified')
-    subscription_type = models.CharField(max_length=64, default='unverified')
+    subscriptionId = models.CharField(max_length=64, default='unverified')
+    subscriptionType = models.CharField(max_length=64, default='unverified')
+    callbackReference = models.CharField(max_length=64, default='unverified')
+    requestTestNotification = models.CharField(max_length=64, default='unverified')
+    websockNotifConfig_description = models.CharField(max_length=64, default='unverified')
+    websockNotifConfig_websocketUri = models.CharField(max_length=64, default='unverified')
+    websockNotifConfig_requestWebsocketUri = models.CharField(max_length=64, default='unverified')
+    _links_description = models.CharField(max_length=64, default='unverified')
+    _links_self_href = models.CharField(max_length=64, default='unverified')
+    filterCriteriaAssocHo_description = models.CharField(max_length=64, default='unverified')
+    filterCriteriaAssocHo_appInstanceId = models.CharField(max_length=64, default='unverified')
+    filterCriteriaAssocHo_associateId = models.CharField(max_length=64, default='unverified')
+    filterCriteriaAssocHo_ecgi = models.CharField(max_length=64, default='unverified')
+    filterCriteriaAssocHo_hoStatus = models.CharField(max_length=64, default='unverified')
+    expiryDeadline_nanoSeconds = models.CharField(max_length=64, default='unverified')
+    expiryDeadline_Seconds = models.CharField(max_length=64, default='unverified')
     
+class SubscriptionFilterCriteriaAssocHoAssociateId(models.Model):
+    filterCriteriaAssocHo_associateId = models.CharField(max_length=64, default='unverified')
+    filterCriteriaAssocHo_associateId_index = models.CharField(max_length=64, default='unverified')
+    filterCriteriaAssocHo_associateId_type = models.CharField(max_length=64, default='unverified')
+    filterCriteriaAssocHo_associateId_value = models.CharField(max_length=64, default='unverified')
+
+class SubscriptionFilterCriteriaAssocHoEcgi(models.Model):
+    filterCriteriaAssocHo_ecgi = models.CharField(max_length=64, default='unverified')
+    filterCriteriaAssocHo_ecgi_index = models.CharField(max_length=64, default='unverified')
+    filterCriteriaAssocHo_ecgi_cellId = models.CharField(max_length=64, default='unverified')
+    filterCriteriaAssocHo_ecgi_plmn_mcc = models.CharField(max_length=64, default='unverified')
+    filterCriteriaAssocHo_ecgi_plmn_mnc = models.CharField(max_length=64, default='unverified')
+
+class SubscriptionFilterCriteriaAssocHoHoStatus(models.Model):
+    filterCriteriaAssocHo_hoStatus = models.CharField(max_length=64, default='unverified')
+    filterCriteriaAssocHo_hoStatus_index = models.CharField(max_length=64, default='unverified')
+    filterCriteriaAssocHo_hoStatus_list = models.CharField(max_length=64, default='unverified')
+

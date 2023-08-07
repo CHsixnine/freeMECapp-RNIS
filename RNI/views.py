@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from .models import RabInfo,S1bearerinfo,Layer2meas,Subscription
+from .models import *
 from django.contrib import auth as Auth
 from django.utils.datastructures import MultiValueDict
 import json,secrets
@@ -8,6 +8,7 @@ from django.core import serializers
 import uuid
 from threading import Thread
 from utils.rnis_mqtt_client import RNIS_MQTT_CLIENT
+import requests
 
 # Create your views here.
 
@@ -294,14 +295,52 @@ def subscription(request):
     if request.method == "POST":
         try:
             payload = json.loads(request.body.decode("utf-8"))
-
-            subscription_Id = uuid.uuid4()
-            Subscription.objects.create(subscription_Id=subscription_Id,subscription_type=payload["subscriptionType"])
-
-
-
-            result = "Successful subscription"
-            return JsonResponse(result, status=200, safe=False)
+            # subscriptionId = uuid.uuid4()
+            subscriptionId = "test"
+            filterCriteriaAssocHo_associateId = uuid.uuid4()
+            filterCriteriaAssocHo_ecgi = uuid.uuid4()
+            filterCriteriaAssocHo_hoStatus = uuid.uuid4()
+            Subscription.objects.create(
+                subscriptionId=subscriptionId,
+                subscriptionType=payload["subscriptionType"],
+                callbackReference=payload["callbackReference"],
+                requestTestNotification=payload["requestTestNotification"],
+                websockNotifConfig_description=payload["websockNotifConfig"]["description"],
+                websockNotifConfig_websocketUri=payload["websockNotifConfig"]["websocketUri"],
+                websockNotifConfig_requestWebsocketUri=payload["websockNotifConfig"]["requestWebsocketUri"],
+                _links_description=payload["_links"]["description"],
+                _links_self_href=payload["_links"]["self"]["href"],
+                filterCriteriaAssocHo_description=payload["filterCriteriaAssocHo"]["description"],
+                filterCriteriaAssocHo_appInstanceId=payload["filterCriteriaAssocHo"]["appInstanceId"],
+                filterCriteriaAssocHo_associateId=filterCriteriaAssocHo_associateId,
+                filterCriteriaAssocHo_ecgi=filterCriteriaAssocHo_ecgi,
+                filterCriteriaAssocHo_hoStatus=filterCriteriaAssocHo_hoStatus,
+                expiryDeadline_nanoSeconds=payload["expiryDeadline"]["nanoSeconds"],
+                expiryDeadline_Seconds=payload["expiryDeadline"]["Seconds"]
+            )
+            for i in range(len(payload["filterCriteriaAssocHo"]["associateId"])):
+                SubscriptionFilterCriteriaAssocHoAssociateId.objects.create(
+                    filterCriteriaAssocHo_associateId=filterCriteriaAssocHo_associateId,
+                    filterCriteriaAssocHo_associateId_index=str(i),
+                    filterCriteriaAssocHo_associateId_type=payload["filterCriteriaAssocHo"]["associateId"][i]["type"],
+                    filterCriteriaAssocHo_associateId_value=payload["filterCriteriaAssocHo"]["associateId"][i]["value"]
+                )
+            for i in range(len(payload["filterCriteriaAssocHo"]["ecgi"])):
+                SubscriptionFilterCriteriaAssocHoEcgi.objects.create(
+                    filterCriteriaAssocHo_ecgi=filterCriteriaAssocHo_ecgi,
+                    filterCriteriaAssocHo_ecgi_index=str(i),
+                    filterCriteriaAssocHo_ecgi_cellId=payload["filterCriteriaAssocHo"]["ecgi"][i]["cellId"],
+                    filterCriteriaAssocHo_ecgi_plmn_mcc=payload["filterCriteriaAssocHo"]["ecgi"][i]["plmn"]["mcc"],
+                    filterCriteriaAssocHo_ecgi_plmn_mnc=payload["filterCriteriaAssocHo"]["ecgi"][i]["plmn"]["mnc"]
+                )
+            for i in range(len(payload["filterCriteriaAssocHo"]["hoStatus"])):
+                SubscriptionFilterCriteriaAssocHoHoStatus.objects.create(
+                    filterCriteriaAssocHo_hoStatus=filterCriteriaAssocHo_hoStatus,
+                    filterCriteriaAssocHo_hoStatus_index=str(i),
+                    filterCriteriaAssocHo_hoStatus_list=payload["filterCriteriaAssocHo"]["hoStatus"][i]
+                )
+            result = payload
+            return JsonResponse(result, status=200)
         except Exception as e:
             print(e)
             result = {
@@ -335,7 +374,7 @@ def subscription_get(request, content):
         result = "no content"
         return JsonResponse(result, status=200)
 
-def get_rab_info(data):
+def get_rab_info(request, data):
     ueInfo = []
     cellUserInfo = []
     erabInfo = []
@@ -398,48 +437,57 @@ def get_rab_info(data):
     }
     return result
 
-def test(request):
-    payload = {
-        "subscriptionType": "CellChangeSubscription",
-        "_links":{
-            "self":{
-                "herf":""
-            }
-        },
-        "callbackReference":"",
-        "websockNotifConfig": {
-            "websocketUri":"",
-            "requestWebsocketUri": True
-        },
-        "expiryDeadline": {
-            "nanoSeconds": 10,
-            "seconds": 10
-        },
-        "filterCriteriaAssocHo": {
-            "appInstanceId":"",
-            "associateId":[
+def test(request, subscriptionId):
+    if request.method == "GET":
+        data = Subscription.objects.filter(subscriptionId=subscriptionId).first()
+        payload = {
+            "notificationType": "CellChangeNotification",
+            "associateId": [
                 {
-                    "AssociateIdAssociateId":{
-                        "type":"",
-                        "value":""
+                    "type": "1",
+                    "value": "60.60.0.1"
+                }
+            ],
+            "hoStatus": 1,
+            "srcEcgi": [
+                {
+                    "cellId": "1",
+                    "plmn": {
+                        "mcc": "208",
+                        "mnc": "93"
                     }
                 }
             ],
-            "ecgi":[
+            "tempUeId": {
+                "description": "",
+                "mmec": "0x01", #sd
+                "mtmsi": "0x00000001" #sst
+            },
+            "timeStamp": {
+                "nanoSeconds": "",
+                "Seconds": ""
+            },
+            "trgEcgi": [
                 {
-                    "cellId":"",
-                    "plmn":{
-                        "mcc": "",
-                        "mnc": ""
+                    "cellId": "1",
+                    "plmn": {
+                        "mcc": "208",
+                        "mnc": "93"
                     }
                 }
             ],
-            "hoStatus":[
-                1
-            ]
-        },
-        "requestTestNotification": True
-    }
-    mqtt_client = RNIS_MQTT_CLIENT("10.0.0.218")
-    mqtt_client.send(payload=payload, topic="CaReconfNotification")
-    return JsonResponse(1, status=200, safe=False)
+            "_links":{
+                "description": "", 
+                "subscription":{
+                    "herf":""
+                }
+            },
+        }
+        payload = json.dumps(payload)
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Cache-Control': 'no-cache',
+        }
+        response = requests.request("POST", "http://"+data.websockNotifConfig_websocketUri, headers=headers, data=payload)
+        return JsonResponse(json.loads(response.text), status=200)
+        

@@ -26,6 +26,9 @@ SECRET_KEY = 'django-insecure-j+21exwz(3q-2u$78=^yw2e4h8j(jh^9pp7g_)13x$@d=xii#b
 DEBUG = True
 
 RNIS_HOST = '10.0.0.218'
+MEP_HOST = "10.0.0.218:30666"
+APPINSTANCE_ID = "rnis045903857--10.0.0.218:34345"
+
 
 ALLOWED_HOSTS = [RNIS_HOST]
 

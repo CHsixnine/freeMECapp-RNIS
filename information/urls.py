@@ -23,7 +23,7 @@ URI = {
     "s1_bearer_info" : "rni/v2/queries/s1_bearer_info",
     "layer2_meas" : "rni/v2/queries/layer2_meas",
     "subscription" : "rni/v2/subscriptions",
-    "test" : "rni/v2/test",
+    "test" : "rni/v2/test/<str:subscriptionId>",
 }
 
 urlpatterns = [
